@@ -133,12 +133,11 @@ Bundle 'scrooloose/syntastic'
 Bundle 'xptemplate' 
 "修改xptemplate.conf.vim键映射
 Bundle 'tagbar'
-
 Bundle 'groovy.vim'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Plugin 'TinyBufferExplorer'
-Bundle 'winmanager'
+
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'cSyntaxAfter'
 Bundle 'Yggdroot/indentLine'
@@ -146,6 +145,8 @@ Bundle 'jiangmiao/auto-pairs'
 Bundle 'a.vim'
 Bundle 'javacomplete'
 Bundle 'motemen/git-vim'
+
+
 "Bundle 'Align'
 "Bundle 'bufexplorer.zip'
 "Bundle 'ccvext.vim'
@@ -495,6 +496,9 @@ inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P>
 inoremap <buffer> <C-S-Space> <C-X><C-U><C-P>
 
 autocmd Filetype java,javascript,jsp inoremap <buffer>  .  .<C-X><C-O><C-P>
+
+
+
 " -----------------------------------------------------------------------------
 "  < a.vim 插件配置 >
 " -----------------------------------------------------------------------------

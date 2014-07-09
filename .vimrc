@@ -129,16 +129,13 @@ Bundle 'gmarik/vundle'
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'Valloric/ListToggle'
 Bundle 'scrooloose/syntastic'
-"Bundle 'msanders/snipmate.vim'
 Bundle 'xptemplate' 
 "修改xptemplate.conf.vim键映射
 Bundle 'tagbar'
-
 Bundle 'groovy.vim'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Plugin 'TinyBufferExplorer'
-Bundle 'winmanager'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'cSyntaxAfter'
 Bundle 'Yggdroot/indentLine'
@@ -146,6 +143,8 @@ Bundle 'jiangmiao/auto-pairs'
 Bundle 'a.vim'
 Bundle 'javacomplete'
 Bundle 'motemen/git-vim'
+Bundle 'basepi/vim-conque'
+
 "Bundle 'Align'
 "Bundle 'bufexplorer.zip'
 "Bundle 'ccvext.vim'
@@ -172,9 +171,11 @@ Bundle 'motemen/git-vim'
 "  < 编码配置 >
 " -----------------------------------------------------------------------------
 " 注：使用utf-8格式后，软件与程序源码、文件路径不能有中文，否则报错
-"set encoding=utf-8                                    "设置gvim内部编码
-"set fileencoding=utf-8                                "设置当前文件编码
-"set fileencodings=ucs-bom,utf-8,gbk,cp936,latin-1     "设置支持打开的文件的编码
+set encoding=utf-8                                    "设置gvim内部编码
+set fileencoding=utf-8                                "设置当前文件编码
+set fileencodings=ucs-bom,utf-8,gbk,cp936,latin-1     "设置支持打开的文件的编码
+
+
 
 " 文件格式，默认 ffs=dos,unix
 set fileformat=unix                                   "设置新文件的<EOL>格式
@@ -246,21 +247,25 @@ set number                                            "显示行号
 set laststatus=2                                      "启用状态栏信息
 set cmdheight=2                                       "设置命令行的高度为2，默认为1
 set cursorline                                        "突出显示当前行
-set guifont=Monospace\ 18                	"设置字体:字号（字体名称空格用下划线代替）
-"set gfn=Yahei_Consolas_Hybrid\ 14 
+"设置字体:字号（字体名称空格用下划线代替）
+set guifont=YaHeiConsolasHybrid\ 16
 
-set encoding=utf-8
+
 set nowrap                                            "设置不自动换行
 set shortmess=atI                                     "去掉欢迎界面
-" au GUIEnter * simalt ~x                              "窗口启动时自动最大化
+"au GUIEnter * simalt ~x                              "窗口启动时自动最大化
+function Maximize_Window()
+  silent !wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
+endfunction
+map <F1> :call Maximize_Window()<CR>
 winpos 100 10                                         "指定窗口出现的位置，坐标原点在屏幕左上角
-set lines=38 columns=120                              "指定窗口大小，lines为高度，columns为宽度
+
 
 " 设置代码配色方案
 if g:isGUI
     colorscheme evening               			"Gvim配色方案
 else
-    colorscheme Tomorrow-Night-Eighties               "终端配色方案
+    "colorscheme Tomorrow-Night-Eighties               "终端配色方案
 endif
 
 " 个性化状栏（这里提供两种方式，要使用其中一种去掉注释即可，不使用反之）
