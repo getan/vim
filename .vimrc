@@ -144,6 +144,7 @@ Bundle 'a.vim'
 Bundle 'javacomplete'
 Bundle 'motemen/git-vim'
 Bundle 'basepi/vim-conque'
+Bundle 'ZoomWin'
 
 "Bundle 'Align'
 "Bundle 'bufexplorer.zip'
@@ -158,7 +159,7 @@ Bundle 'basepi/vim-conque'
 "Bundle 'tpope/vim-surround'
 "Bundle 'netroby/taglist'
 "Bundle 'TxtBrowser'
-"Bundle 'ZoomWin'
+
 "Bundle 'vimgdb'
 "Bundle 'echofunc.vim'
 "Bundle 'neocomplcache'
@@ -248,7 +249,7 @@ set laststatus=2                                      "启用状态栏信息
 set cmdheight=2                                       "设置命令行的高度为2，默认为1
 set cursorline                                        "突出显示当前行
 "设置字体:字号（字体名称空格用下划线代替）
-set guifont=YaHeiConsolasHybrid\ 16
+set guifont=YaHeiConsolasHybrid\ 18
 
 
 set nowrap                                            "设置不自动换行
@@ -318,7 +319,7 @@ let s:linux_CFlags = 'gcc\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
 
 let s:windows_CPPFlags = 'g++\ -fexec-charset=gbk\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
 "let s:linux_CPPFlags = 'g++\ -std=c++11\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
-let s:linux_CPPFlags = 'clang++\ -std=c++11\ -stdlib=libc++\ -O0\ -c\ %\ -o\ %<.o'
+let s:linux_CPPFlags = 'clang++\ -std=c++11\ -O0\ -c\ %\ -o\ %<.o'
 
 func! Compile()
     exe ":ccl"
@@ -404,7 +405,7 @@ func! Link()
                 echohl WarningMsg | echo " linking..."
                 silent make
             elseif expand("%:e") == "cpp" || expand("%:e") == "cxx"
-                setlocal makeprg=clang++\ -o\ %<\ %<.o\ -stdlib=libc++\ -lgmock\ -pthread
+                setlocal makeprg=clang++\ -o\ %<\ %<.o\ -stdlib=libstdc++\ -pthread\ -lgmockclang
                 echohl WarningMsg | echo " linking..."
                 silent make
             endif
@@ -484,13 +485,32 @@ let g:syntastic_check_on_open=1
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
 
-" for ycm
-let g:ycm_error_symbol = '>>'
-let g:ycm_warning_symbol = '>*'
-nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
-nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
-nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
-nmap <F4> :YcmDiags<CR>
+    """"""""""YouCompleteMe""""""""
+    nmap <leader>gd :YcmDiags<CR>
+    nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>           " 跳转到申明处
+    nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>            " 跳转到定义处
+    nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+    let g:ycm_error_symbol = '>>'                                   " 编译错误标识符
+    let g:ycm_warning_symbol = '>*'                                 " 编译警告标识符
+    let g:ycm_confirm_extra_conf=0                                  " 关闭加载.ycm_extra_conf.py提示
+    let g:ycm_collect_identifiers_from_tags_files=1                 " 开启 YCM 基于标签引擎
+    let g:ycm_min_num_of_chars_for_completion=2                     " 从第2个键入字符就开始罗列匹配项
+    let g:ycm_cache_omnifunc=0                                      " 禁止缓存匹配项,每次都重新生成匹配项
+    let g:ycm_seed_identifiers_with_syntax=1                        " 语法关键字补全
+    let g:ycm_complete_in_comments = 1                              " 在注释输入中也能补全
+    let g:ycm_complete_in_strings = 1                               " 在字符串输入中也能补全
+    let g:ycm_collect_identifiers_from_comments_and_strings = 0     " 注释和字符串中的文字也会被收入补全
+    let g:ycm_semantic_triggers = {}
+    let g:ycm_semantic_triggers.cpp = ['->', '.', ' ', '(', '[', '&']
+    set completeopt=longest,menu                                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+    autocmd InsertLeave * if pumvisible() == 0|pclose|endif         " 离开插入模式后自动关闭预览窗口
+    inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"    " 回车即选中当前项
+
+    " YCM 补全菜单配色
+    "highlight Pmenu ctermfg=2 ctermbg=3 guifg=SeaGreen guibg=darkgreen    " 菜单
+    "highlight PmenuSel ctermfg=2 ctermbg=3 guifg=SeaGreen guibg=blue " Select
+	nmap <F4> :YcmDiags<CR>
 
 "javacomplete
 
