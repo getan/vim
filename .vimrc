@@ -145,7 +145,11 @@ Bundle 'javacomplete'
 Bundle 'motemen/git-vim'
 Bundle 'basepi/vim-conque'
 Bundle 'ZoomWin'
-
+Bundle 'mhinz/vim-startify'
+Bundle 'SirVer/ultisnips'
+Bundle 'airblade/vim-gitgutter'
+Bundle 'terryma/vim-multiple-cursors'
+Bundle 'sjl/gundo.vim'
 "Bundle 'Align'
 "Bundle 'bufexplorer.zip'
 "Bundle 'ccvext.vim'
@@ -405,7 +409,7 @@ func! Link()
                 echohl WarningMsg | echo " linking..."
                 silent make
             elseif expand("%:e") == "cpp" || expand("%:e") == "cxx"
-                setlocal makeprg=clang++\ -o\ %<\ %<.o\ -stdlib=libstdc++\ -pthread\ -lgmockclang
+                setlocal makeprg=clang++\ -o\ %<\ %<.o\ -stdlib=libstdc++\ -pthread\ -lgmock
                 echohl WarningMsg | echo " linking..."
                 silent make
             endif
@@ -574,7 +578,12 @@ endif
 
 
 
-
+"ultisnips
+" Trigger configuration. Do not use <tab> 
+"if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 
 " -----------------------------------------------------------------------------
 "  < nerdcommenter 插件配置 >
