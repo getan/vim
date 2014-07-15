@@ -146,7 +146,7 @@ Bundle 'motemen/git-vim'
 Bundle 'basepi/vim-conque'
 Bundle 'ZoomWin'
 Bundle 'mhinz/vim-startify'
-"Bundle 'SirVer/ultisnips'
+
 Bundle 'airblade/vim-gitgutter'
 Bundle 'terryma/vim-multiple-cursors'
 Bundle 'sjl/gundo.vim'
@@ -484,40 +484,42 @@ au BufNewFile,BufRead *.gradle setf groovy
 "                          << 以下为常用插件配置 >>
 " =============================================================================
 
-"syntastic
+"
+" -----------------------------------------------------------------------------
+"  < syntastic 插件配置 >
+" -----------------------------------------------------------------------------
 let g:syntastic_check_on_open=1
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
 
-    """"""""""YouCompleteMe""""""""
-    nmap <leader>gd :YcmDiags<CR>
-    nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>           " 跳转到申明处
-    nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>            " 跳转到定义处
-    nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
-    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
-    let g:ycm_error_symbol = '>>'                                   " 编译错误标识符
-    let g:ycm_warning_symbol = '>*'                                 " 编译警告标识符
-    let g:ycm_confirm_extra_conf=0                                  " 关闭加载.ycm_extra_conf.py提示
-    let g:ycm_collect_identifiers_from_tags_files=1                 " 开启 YCM 基于标签引擎
+" -----------------------------------------------------------------------------
+"  < YCM 插件配置 >
+" -----------------------------------------------------------------------------
+   
+   nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>           " 跳转到申明处
+   nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>            " 跳转到定义处
+   nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+   let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+   let g:ycm_error_symbol = '>>'                                   " 编译错误标识符
+   let g:ycm_warning_symbol = '>*'                                 " 编译警告标识符
+   let g:ycm_confirm_extra_conf=0                                  " 关闭加载.ycm_extra_conf.py提示
+	
+	nmap <F4> :YcmDiags<CR>
+	
     let g:ycm_min_num_of_chars_for_completion=2                     " 从第2个键入字符就开始罗列匹配项
-    let g:ycm_cache_omnifunc=0                                      " 禁止缓存匹配项,每次都重新生成匹配项
+   
     let g:ycm_seed_identifiers_with_syntax=1                        " 语法关键字补全
     let g:ycm_complete_in_comments = 1                              " 在注释输入中也能补全
     let g:ycm_complete_in_strings = 1                               " 在字符串输入中也能补全
-    let g:ycm_collect_identifiers_from_comments_and_strings = 0     " 注释和字符串中的文字也会被收入补全
-    "let g:ycm_semantic_triggers = {}
-    let g:ycm_semantic_triggers.cpp = ['->', '.', ' ', '(', '[', '&']
+
+   
     set completeopt=longest,menu                                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
     autocmd InsertLeave * if pumvisible() == 0|pclose|endif         " 离开插入模式后自动关闭预览窗口
     inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"    " 回车即选中当前项
-
-    " YCM 补全菜单配色
-    "highlight Pmenu ctermfg=2 ctermbg=3 guifg=SeaGreen guibg=darkgreen    " 菜单
-    "highlight PmenuSel ctermfg=2 ctermbg=3 guifg=SeaGreen guibg=blue " Select
-	nmap <F4> :YcmDiags<CR>
-
-"javacomplete
-
+"
+" -----------------------------------------------------------------------------
+"  < javacomplete 插件配置 >
+" -----------------------------------------------------------------------------
 autocmd Filetype java set omnifunc=javacomplete#Complete                        "这一句是自动补全（好像是）
 autocmd Filetype java set completefunc=javacomplete#CompleteParamsInf  " 这一句是参数提示，好像不太好用，
 inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P> 
@@ -578,12 +580,7 @@ endif
 
 
 
-"ultisnips
-" Trigger configuration. Do not use <tab> 
-"if you use https://github.com/Valloric/YouCompleteMe.
-"let g:UltiSnipsExpandTrigger="<c-j>"
-"let g:UltiSnipsJumpForwardTrigger="<c-j>"
-"let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+
 
 " -----------------------------------------------------------------------------
 "  < nerdcommenter 插件配置 >
