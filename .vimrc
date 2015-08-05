@@ -62,6 +62,9 @@ endif
 " -----------------------------------------------------------------------------
 "  < Linux Gvim/Vim 默认配置> 做了一点修改
 " -----------------------------------------------------------------------------
+
+
+ 
 if !g:iswindows
     set hlsearch        "高亮搜索
     set incsearch       "在输入要搜索的文字时，实时匹配
@@ -150,28 +153,10 @@ Bundle 'mhinz/vim-startify'
 Bundle 'airblade/vim-gitgutter'
 Bundle 'terryma/vim-multiple-cursors'
 Bundle 'sjl/gundo.vim'
-"Bundle 'Align'
-"Bundle 'bufexplorer.zip'
-"Bundle 'ccvext.vim'
-"Bundle 'breestealth/Mark-Karkat'
-"Bundle 'minibufexpl.vim'
-"Bundle 'FromtonRouge/OmniCppComplete'
-"Bundle 'repeat.vim'
-"Bundle 'wesleyche/SrcExpl'
-"Bundle 'ervandew/supertab'
-"Bundle 'std_c.zip'
-"Bundle 'tpope/vim-surround'
-"Bundle 'netroby/taglist'
-"Bundle 'TxtBrowser'
+Bundle 'Solarized'
+Bundle 'SpaceBetween'
+Bundle 'cscope.vim'
 
-"Bundle 'vimgdb'
-"Bundle 'echofunc.vim'
-"Bundle 'neocomplcache'
-"Bundle 'AutoComplPop'
-"Bundle 'code_complete'
-"Bundle 'maven-plugin'
-"Bundle 'maven2.vim'
-"Bundle 'pyconsole_vim.vim'
 " -----------------------------------------------------------------------------
 "  < 编码配置 >
 " -----------------------------------------------------------------------------
@@ -259,19 +244,19 @@ set guifont=YaHeiConsolasHybrid\ 18
 set nowrap                                            "设置不自动换行
 set shortmess=atI                                     "去掉欢迎界面
 "au GUIEnter * simalt ~x                              "窗口启动时自动最大化
-function Maximize_Window()
-  silent !wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
-endfunction
-map <F1> :call Maximize_Window()<CR>
+
 winpos 100 10                                         "指定窗口出现的位置，坐标原点在屏幕左上角
 
 
 " 设置代码配色方案
-if g:isGUI
-    colorscheme evening               			"Gvim配色方案
+if has('gui_running')
+    set background=light
 else
-    "colorscheme Tomorrow-Night-Eighties               "终端配色方案
+    set background=dark
 endif
+
+colorscheme solarized             			"Gvim配色方案
+
 
 " 个性化状栏（这里提供两种方式，要使用其中一种去掉注释即可，不使用反之）
 " let &statusline=' %t %{&mod?(&ro?"*":"+"):(&ro?"=":" ")} %1*|%* %{&ft==""?"any":&ft} %1*|%* %{&ff} %1*|%* %{(&fenc=="")?&enc:&fenc}%{(&bomb?",BOM":"")} %1*|%* %=%1*|%* 0x%B %1*|%* (%l,%c%V) %1*|%* %L %1*|%* %P'
@@ -296,181 +281,7 @@ if g:isGUI
     \endif<CR>
 endif
 
-" -----------------------------------------------------------------------------
-"  < 编译、连接、运行配置 >
-" -----------------------------------------------------------------------------
-" F9 一键保存、编译、连接存并运行
-map <F9> :call Run()<CR>
-imap <F9> <ESC>:call Run()<CR>
 
-" Ctrl + F9 一键保存并编译
-map <c-F9> :call Compile()<CR>
-imap <c-F9> <ESC>:call Compile()<CR>
-
-" Ctrl + F10 一键保存并连接
-map <c-F10> :call Link()<CR>
-imap <c-F10> <ESC>:call Link()<CR>
-
-let s:LastShellReturn_C = 0
-let s:LastShellReturn_L = 0
-let s:ShowWarning = 1
-let s:Obj_Extension = '.o'
-let s:Exe_Extension = '.exe'
-let s:Sou_Error = 0
-
-let s:windows_CFlags = 'gcc\ -fexec-charset=gbk\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
-let s:linux_CFlags = 'gcc\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
-
-let s:windows_CPPFlags = 'g++\ -fexec-charset=gbk\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
-"let s:linux_CPPFlags = 'g++\ -std=c++11\ -Wall\ -g\ -O0\ -c\ %\ -o\ %<.o'
-let s:linux_CPPFlags = 'clang++\ -std=c++11\ -O0\ -c\ %\ -o\ %<.o'
-
-func! Compile()
-    exe ":ccl"
-    exe ":update"
-    if expand("%:e") == "c" || expand("%:e") == "cpp" || expand("%:e") == "cxx"
-        let s:Sou_Error = 0
-        let s:LastShellReturn_C = 0
-        let Sou = expand("%:p")
-        let Obj = expand("%:p:r").s:Obj_Extension
-        let Obj_Name = expand("%:p:t:r").s:Obj_Extension
-        let v:statusmsg = ''
-        if !filereadable(Obj) || (filereadable(Obj) && (getftime(Obj) < getftime(Sou)))
-            redraw!
-            if expand("%:e") == "c"
-                if g:iswindows
-                    exe ":setlocal makeprg=".s:windows_CFlags
-                else
-                    exe ":setlocal makeprg=".s:linux_CFlags
-                endif
-                echohl WarningMsg | echo " compiling..."
-                silent make
-            elseif expand("%:e") == "cpp" || expand("%:e") == "cxx"
-                if g:iswindows
-                    exe ":setlocal makeprg=".s:windows_CPPFlags
-                else
-                    exe ":setlocal makeprg=".s:linux_CPPFlags
-                endif
-                echohl WarningMsg | echo " compiling..."
-                silent make
-            endif
-            redraw!
-            if v:shell_error != 0
-                let s:LastShellReturn_C = v:shell_error
-            endif
-            if g:iswindows
-                if s:LastShellReturn_C != 0
-                    exe ":bo cope"
-                    echohl WarningMsg | echo " compilation failed"
-                else
-                    if s:ShowWarning
-                        exe ":bo cw"
-                    endif
-                    echohl WarningMsg | echo " compilation successful"
-                endif
-            else
-                if empty(v:statusmsg)
-                    echohl WarningMsg | echo " compilation successful"
-                else
-                    exe ":bo cope"
-                endif
-            endif
-        else
-            echohl WarningMsg | echo ""Obj_Name"is up to date"
-        endif
-    else
-        let s:Sou_Error = 1
-        echohl WarningMsg | echo " please choose the correct source file"
-    endif
-    exe ":setlocal makeprg=make"
-endfunc
-
-func! Link()
-    call Compile()
-    if s:Sou_Error || s:LastShellReturn_C != 0
-        return
-    endif
-    let s:LastShellReturn_L = 0
-    let Sou = expand("%:p")
-    let Obj = expand("%:p:r").s:Obj_Extension
-    if g:iswindows
-        let Exe = expand("%:p:r").s:Exe_Extension
-        let Exe_Name = expand("%:p:t:r").s:Exe_Extension
-    else
-        let Exe = expand("%:p:r")
-        let Exe_Name = expand("%:p:t:r")
-    endif
-    let v:statusmsg = ''
-	if filereadable(Obj) && (getftime(Obj) >= getftime(Sou))
-        redraw!
-        if !executable(Exe) || (executable(Exe) && getftime(Exe) < getftime(Obj))
-            if expand("%:e") == "c"
-                setlocal makeprg=gcc\ -o\ %<\ %<.o
-                echohl WarningMsg | echo " linking..."
-                silent make
-            elseif expand("%:e") == "cpp" || expand("%:e") == "cxx"
-                setlocal makeprg=clang++\ -o\ %<\ %<.o\ -stdlib=libstdc++\ -pthread\ -lgmock
-                echohl WarningMsg | echo " linking..."
-                silent make
-            endif
-            redraw!
-            if v:shell_error != 0
-                let s:LastShellReturn_L = v:shell_error
-            endif
-            if g:iswindows
-                if s:LastShellReturn_L != 0
-                    exe ":bo cope"
-                    echohl WarningMsg | echo " linking failed"
-                else
-                    if s:ShowWarning
-                        exe ":bo cw"
-                    endif
-                    echohl WarningMsg | echo " linking successful"
-                endif
-            else
-                if empty(v:statusmsg)
-                    echohl WarningMsg | echo " linking successful"
-                else
-                    exe ":bo cope"
-                endif
-            endif
-        else
-            echohl WarningMsg | echo ""Exe_Name"is up to date"
-        endif
-    endif
-    setlocal makeprg=make
-endfunc
-
-func! Run()
-    let s:ShowWarning = 0
-    call Link()
-    let s:ShowWarning = 1
-    if s:Sou_Error || s:LastShellReturn_C != 0 || s:LastShellReturn_L != 0
-        return
-    endif
-    let Sou = expand("%:p")
-    let Obj = expand("%:p:r").s:Obj_Extension
-    if g:iswindows
-        let Exe = expand("%:p:r").s:Exe_Extension
-    else
-        let Exe = expand("%:p:r")
-    endif
-    if executable(Exe) && getftime(Exe) >= getftime(Obj) && getftime(Obj) >= getftime(Sou)
-        redraw!
-        echohl WarningMsg | echo " running..."
-        if g:iswindows
-            exe ":!%<.exe"
-        else
-            "if g:isGUI
-            		"exe ":!gnome-terminal -e ./%<'"
-            "else
-                exe ":!./%<"
-            "endif
-        endif
-        "redraw!
-        "echohl WarningMsg | echo " running finish"
-    endif
-endfunc
 
 " -----------------------------------------------------------------------------
 "  < 其它配置 >
@@ -479,6 +290,9 @@ set writebackup                             "保存文件前建立备份，保�
 set nobackup                                "设置无备份文件
 " set noswapfile                              "设置无临时文件
 au BufNewFile,BufRead *.gradle setf groovy
+set path^=/usr/local/include
+set path^=../include
+imap <c-x> <c-x><c-o>
 
 " =============================================================================
 "                          << 以下为常用插件配置 >>
@@ -489,9 +303,20 @@ au BufNewFile,BufRead *.gradle setf groovy
 "  < syntastic 插件配置 >
 " -----------------------------------------------------------------------------
 let g:syntastic_check_on_open=1
+let g:syntastic_c_compiler = 'clang'
+let g:syntastic_c_compiler_options = '-std=c99 -I ../include'
+
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
+let g:syntastic_auto_loc_list = 0
 
+let g:syntastic_java_checkers = ['checkstyle', 'javac'] 
+" -----------------------------------------------------------------------------
+"  < java project cp配置 >
+" -----------------------------------------------------------------------------
+let allAtm=":/home/getan/workspace/allChinaAtmsInfo/lib/json-lib-2.4-jdk15.jar:/home/getan/workspace/allChinaAtmsInfo/lib/poi-ooxml-3.12.jar:/home/getan/workspace/allChinaAtmsInfo/lib/poi-3.12.jar"
+let default="/home/getan/programs/openjdk/jdk/src/share/classes:~/programs/junit/src/main/java:$CLASSPATH:$JAVA_HOME/jre/lib/rt.jar"
+let g:syntastic_java_javac_classpath=default.allAtm
 " -----------------------------------------------------------------------------
 "  < YCM 插件配置 >
 " -----------------------------------------------------------------------------
@@ -513,19 +338,61 @@ let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libstdc++'
     let g:ycm_complete_in_strings = 1                               " 在字符串输入中也能补全
 
    
-    set completeopt=longest,menu                                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+    set completeopt=longest,menu                                    " 让Vim的补全菜单行为与一般IDE一(参考VimTip1228)
     autocmd InsertLeave * if pumvisible() == 0|pclose|endif         " 离开插入模式后自动关闭预览窗口
     inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"    " 回车即选中当前项
 "
 " -----------------------------------------------------------------------------
 "  < javacomplete 插件配置 >
 " -----------------------------------------------------------------------------
+setlocal omnifunc=javacomplete#Complete
 autocmd Filetype java set omnifunc=javacomplete#Complete                        "这一句是自动补全（好像是）
 autocmd Filetype java set completefunc=javacomplete#CompleteParamsInf  " 这一句是参数提示，好像不太好用，
 inoremap <buffer> <C-X><C-U> <C-X><C-U><C-P> 
 inoremap <buffer> <C-S-Space> <C-X><C-U><C-P>
 
 autocmd Filetype java,javascript,jsp inoremap <buffer>  .  .<C-X><C-O><C-P>
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""  
+" 语言的编译和运行             
+" 支持的语言：java  c c++       F5编译(保存+编译)  F6运行  
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""  
+func! CompileCode()  
+    exec "w"  
+    if &filetype == "java"  
+        exec "!javac %"  
+	exec "!read -p 'Enter'"
+    endif  
+    if &filetype == "c"
+	exec "!clang -std=c99 % -o %<"
+	exec "!read -p 'Enter'"
+    endif
+endfunc  
+func! RunCode() 
+    exec "w"    
+    if &filetype == "java"  
+        exec "!java %:t:r"
+	exec "!read -p 'Enter'"
+    endif  
+    if &filetype == "c"
+	exec "!./%<"
+	exec "!read -p 'Enter'"
+    endif
+    if &filetype == "py"
+	exec "!python %"
+	exec "!read -p 'Enter'"
+    endif
+	
+
+endfunc  
+   
+" F5 保存+编译  
+map <F5> :call CompileCode()<CR>  
+  
+"  F6 运行  
+map <F6> :call RunCode()<CR>  
 " -----------------------------------------------------------------------------
 "  < a.vim 插件配置 >
 " -----------------------------------------------------------------------------
